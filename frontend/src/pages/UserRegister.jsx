@@ -40,12 +40,12 @@ const Register = () => {
 
     try {
       await axios.post("http://localhost:5000/api/auth/register", form);
-      setMessage('✅ Registo efetuado com sucesso! Verifique o seu email para ativar a conta.');
+      setMessage('Registo efetuado com sucesso! Verifique o seu email para ativar a conta.');
       setError('');
       // Redirecionar para login após 10 segundos se for recém-ativada
       timer = setTimeout(() => {
         navigate('/userLogin');
-      }, 10000);
+      }, 5000);
     } catch (err) {
       const errorMsg =
             err.response?.data?.message ||

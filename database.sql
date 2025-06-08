@@ -20,6 +20,7 @@ CREATE TABLE user (
 	token VARCHAR(255),
 	active BOOLEAN DEFAULT FALSE,
     is_admin BOOLEAN DEFAULT FALSE,
+    cookieConsent BOOLEAN DEFAULT FALSE,
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME,
 	updated_by INT

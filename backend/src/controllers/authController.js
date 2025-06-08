@@ -185,3 +185,59 @@ export const logout = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  console.log('Recebido no resetPassword:', { token, newPassword });
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ message: 'Token e nova palavra-passe são obrigatórios.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const user = await User.findByPk(decoded.id);
+
+    if (!user|| user.token !== token)
+      return res.status(400).json({ message: 'Token inválido ou expirado.'});
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.token = null; // Limpa o token depois de usado
+    await user.save();
+
+    res.json({ message: 'Palavra-passe actualizada com sucesso.'});
+  } catch (error) {
+    console.error('Erro em repor palavra-passe: ', error.message);
+    res.status(400).json({ message: 'Token inválido ou expirado' });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const foundUser = await User.findOne({ where: { email } });
+
+    if (!foundUser)
+      return res.status(404).json({ message: 'Se o email existir, será enviado um email com um link.'});
+
+    const resetToken = jwt.sign({ id: foundUser.id }, SECRET_KEY, { expiresIn: '15m' });
+    foundUser.token = resetToken;
+    await foundUser.save();
+
+    const resetLink =  `http://localhost:3000/userResetPassword?token=${resetToken}`;
+    const emailContent = `
+      <h3>Olá, ${foundUser.firstname}</h3>
+      <p>Clica no link abaixo para definires uma nova palavra-passe:</p>
+      <a href="${resetLink}">Recuperar Palavra-passe</a>
+    `;
+
+    await sendEmail(foundUser.email, 'Recuperação de palavra-passe', emailContent);
+
+    res.json({ message: 'Instruções de recuperação enviadas por email.' });
+  } catch (error) {
+    console.error('Erro em palavra-passe esquecida: ', error);
+    res.status(500).json({ error: error.message });
+  }
+};

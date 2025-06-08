@@ -1,4 +1,4 @@
-// backend/src/middleware/middleware.js
+// backend/src/middleware/authMiddleware.js
 import jwt from 'jsonwebtoken';
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -27,4 +27,4 @@ const adminMiddleware = (req, res, next) => {
   next();
 };
 
-export { authMiddleware, adminMiddleware };
+export default { authMiddleware, adminMiddleware };

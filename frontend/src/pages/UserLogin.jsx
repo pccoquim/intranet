@@ -1,6 +1,7 @@
 // frontend/src/pages/UserLogin.jsx
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [form, setForm] = useState({ login: "", password: "" });
@@ -19,7 +20,7 @@ const Login = () => {
     try {
       await login(form.login, form.password);
     } catch (err) {
-      setError("❌ Credenciais inválidas ou conta não ativada.");
+      setError("Credenciais inválidas ou conta não ativada.");
     }
   };
 
@@ -32,7 +33,7 @@ const Login = () => {
           name="login"
           value={form.login}
           onChange={handleChange}
-          placeholder="Login ou Nome de Utilizador"
+          placeholder="Email ou Nome de Utilizador"
           required
           className="w-full px-3 py-2 border rounded"
         />
@@ -63,6 +64,12 @@ const Login = () => {
       </form>
 
       {error && <p className="text-red-600 mt-4">{error}</p>}
+      {/* 👉 Link para recuperar palavra-passe */}
+      <div className="mt-4 text-center">
+        <Link to="/userForgotPassword" className="text-sm text-blue-600 hover:underline">
+          Esqueceste-te da palavra-passe?
+        </Link>
+      </div>
     </div>
   );
 };

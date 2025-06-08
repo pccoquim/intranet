@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import sequelize from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
-import usersRoutes from './routes/usersRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 });
 // Rotas
 app.use('/api/auth', authRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/users', userRoutes);
 
 // Iniciar servidor
 const PORT = process.env.BC_PORT || 5000;
@@ -31,6 +31,3 @@ app.listen(PORT, async () => {
         console.error('Erro na conexão ao MySQL:', error);
     }
 });
-
-app.use('/api/auth', authRoutes);
-

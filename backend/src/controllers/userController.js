@@ -1,8 +1,8 @@
 // backebd/src/controllers/userController.js
 import bcrypt from 'bcrypt';
-import User from '../models/User';
+import User from '../models/User.js';
 
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
         res.json(users);
@@ -41,7 +41,10 @@ export const updateUser = async (req, res) => {
     }
 
     // Atualizar apenas os campos permitidos
-    const updateData = {};
+    const updateData = {
+      updated_at: new Date(),              // Data/hora atual
+      updated_by: req.user.id             // ID do utilizador autenticado};
+    };
     if (firstname !== undefined) updateData.firstname = firstname;
     if (lastname !== undefined) updateData.lastname = lastname;
     if (is_admin !== undefined) updateData.is_admin = is_admin;
@@ -51,7 +54,7 @@ export const updateUser = async (req, res) => {
 
     // Retornar o utilizador atualizado
     const updatedUser = await User.findByPk(id, {
-      attributes: ['id', 'username', 'firstname', 'lastname', 'email', 'is_admin', 'active', 'createdAt']
+      attributes: ['id', 'username', 'firstname', 'lastname', 'email', 'is_admin', 'active', 'created_At']
     });
 
     res.json({ 
@@ -87,5 +90,23 @@ export const changePassword = async (req, res) => {
   } catch (error) {
     console.error('Erro ao alterar palavra-passe:', error);
     res.status(500).json({ message: 'Erro ao alterar palavra-passe.' });
+  }
+};
+
+export const updateCookieConsent = async (req, res) => {
+  const userId = req.user.id;
+  const { consent } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
+
+    user.cookieConsent = consent;
+    await user.save();
+
+    res.json({ message: 'Consentimento guardado com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao guardar consentimento.' });
   }
 };

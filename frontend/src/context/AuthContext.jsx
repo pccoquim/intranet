@@ -129,15 +129,14 @@ export const AuthProvider = ({ children }) => {
           is_admin: payload.is_admin
         });
 
-        // 🔁 Redirecionar após login
+        // Redirecionar após login
         navigate("/"); 
       }
       
-      return true;
+      return { success: true };
     } catch (error) {
-      console.error("Erro no login:", error.message);
-      console.error("Detalhes:", error.response?.data || error);
-      return false;
+      const message = error.response?.data?.message || "Erro desconhecido.";
+      throw new Error(message);
     }
   };
 
